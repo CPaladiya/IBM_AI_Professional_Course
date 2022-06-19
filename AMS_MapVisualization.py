@@ -75,14 +75,16 @@ BaseData['ProcLons'], BaseData['ProcLats'] = mp(list(BaseData['longitude'].value
 BaseData.dropna(subset=['ProcLons', 'ProcLats'])
 lons = list(BaseData['ProcLons'].values)
 lats = list(BaseData['ProcLats'].values)
-victims = list((BaseData['total_victims'].astype('string')).values)
+victims = list(BaseData['total_victims'].values)
 print(victims)
 FRAMES = len(lons)
 
 # generating sizes of dots based on the fatalities
 stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].max()
-myscat = mp.scatter([], [], marker='o', cmap='Reds',zorder = 1)
-
+colors = plt.get_cmap('Reds')((stdSizes-stdSizes.mean())/stdSizes.std()) # Creating a color map with standardized data
+myscat = mp.scatter([], [], marker='o',zorder = 1, cmap='Wistia',edgecolors='black', linewidths = 1)
+    
+    
 AnnotationList = []
 def update(i):
     #if(len(AnnotationList) > 0):
@@ -92,17 +94,16 @@ def update(i):
     y = lats[:i]
     myscat.set_offsets(np.c_[x,y])
     myscat.set_sizes(stdSizes[:i])
-    myscat.set_colors(stdSizes[:i])
-    plt.annotate(victims[i], xy=(lons[i], lats[i]), xytext = (lons[i]-50000, lats[i]-50000),weight='bold', color='black',zorder = 2)
+    myscat.set_color(colors[:i])
+    plt.annotate(victims[i], xy=(lons[i], lats[i]),weight='bold', color='black',zorder = 2)
     # AnnotationList.append(ann)
     return myscat,
 
 anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=300, blit=True)
 plt.show()
 
-# possibly increase the size of numbers and dots
-# overlap problem
-# vdo conversion problem
-# border around marker if possible
-# animate location
-# animate total number of victims
+# color border
+# Title
+# size bar
+# flag
+# total count
