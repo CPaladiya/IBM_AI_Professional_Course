@@ -111,6 +111,7 @@ anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=500)
 plt.show()
 
 # Add color bar
+# Add month and date
 # Add location
 # Add number of victims at location
 # Add total number of victims
