@@ -4,6 +4,7 @@ import numpy as np
 import geopy as gp
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from pylab import rcParams
 import math
 
@@ -60,7 +61,7 @@ ulon=-65 # Upper right hand map corner longitude
 llat=25
 ulat=60
 
-mapVisualizer = plt.figure(figsize=(15,8))
+mapVisualizer, ax = plt.subplots(figsize=(12,8))
 # creating a USA map
 mp = bmp(projection='merc',resolution='i', area_thresh=100000 ,lon_0 = 0, lat_0 =90  ,llcrnrlon = llon, llcrnrlat = llat, urcrnrlon = ulon, urcrnrlat = ulat) 
 # filling up land and water with different color to show boundaries and also drawing the coastlines
@@ -82,7 +83,7 @@ FRAMES = len(lons)
 stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].max()
 colors = plt.get_cmap('Reds')((stdSizes-stdSizes.mean())/stdSizes.std()) # Creating a color map with standardized data
 edgecolor = [[0,0,0,1] for x in colors]
-myscat = mp.scatter([], [], marker='o',zorder = 5, cmap='Wistia', linewidths = 2)
+myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
 
 # All the fixed text on the map
 HorzOffset = 250000
@@ -115,6 +116,13 @@ def update(i):
     # updating the map with statistics
     return myscat,
 
+# adding a colorbar in the graph for number of victims
+cmap = mpl.cm.Reds
+norm = mpl.colors.Normalize(vmin=min(victims), vmax=max(victims))
+mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap))
+mp.colorbar()
+
+# Running the animation
 anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=500)
 plt.show()
 
