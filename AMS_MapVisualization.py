@@ -58,9 +58,9 @@ import matplotlib.animation as animation
 llon=-130 # lower left hand map corner longitude
 ulon=-65 # Upper right hand map corner longitude
 llat=25
-ulat=53
+ulat=60
 
-mapVisualizer = plt.figure(figsize=(12,6))
+mapVisualizer = plt.figure(figsize=(15,8))
 # creating a USA map
 mp = bmp(projection='merc',resolution='i', area_thresh=100000 ,lon_0 = 0, lat_0 =90  ,llcrnrlon = llon, llcrnrlat = llat, urcrnrlon = ulon, urcrnrlat = ulat) 
 # filling up land and water with different color to show boundaries and also drawing the coastlines
@@ -83,10 +83,17 @@ stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].m
 colors = plt.get_cmap('Reds')((stdSizes-stdSizes.mean())/stdSizes.std()) # Creating a color map with standardized data
 edgecolor = [[0,0,0,1] for x in colors]
 myscat = mp.scatter([], [], marker='o',zorder = 5, cmap='Wistia', linewidths = 2)
-plt.text(2100000, 3600000, "Mass Shootings in USA", weight='bold', size=20, color='black', rasterized=True, backgroundcolor='red')
-#plt.annotate(, xy=(2500000, 3200000),weight='bold', size=20, color='red',zorder = 6)
-    
-AnnotationList = []
+
+# All the fixed text on the map
+HorzOffset = 250000
+VertTextAlign = 4500000
+plt.text(2100000, 5000000, "Mass Shootings in USA", weight='bold', size=20, color='black', rasterized=True, backgroundcolor='red')
+plt.text(1000000 + HorzOffset, VertTextAlign, "Place", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
+plt.text(1800000 + HorzOffset, VertTextAlign, "Date", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
+plt.text(2600000 + HorzOffset, VertTextAlign, "Victims", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
+plt.text(3700000 + HorzOffset, VertTextAlign, "Total Victims Since XYZ", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
+
+plottedText = []
 ModifiedSize = []
 def update(i):
     
@@ -100,11 +107,12 @@ def update(i):
     # emplify the latest value to make it pop
     if(len(ModifiedSize) > 0):
         ModifiedSize[i-1] *= 3
-    # updating the map with latest values
+    # updating the map with latest dots
     myscat.set_offsets(np.c_[x,y])
     myscat.set_sizes(ModifiedSize)
     myscat.set_color(colors[:i])
     myscat.set_edgecolor(edgecolor[:i])
+    # updating the map with statistics
     return myscat,
 
 anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=500)
