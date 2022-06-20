@@ -96,7 +96,7 @@ myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
 cmap = mpl.cm.Reds
 bounds = [0,5,10,15,20,25,30,35,40,45,55,80,100,720] # colorbar ticks
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label='Victims (~59% Injured + ~41% Passed Away)', ticks=bounds)
+mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=bounds).set_label(label='Victims (Passed away + Injured but alive)',weight='bold', size=15) #(~59% Injured + ~41% Passed Away)
 
 # All the fixed text on the map
 HorzOffset = 250000
@@ -117,10 +117,10 @@ def update(i):
     ModifiedSize = stdSizes[:i]
     # reset the previously modified value
     if(len(ModifiedSize) > 1):
-        ModifiedSize[i-2] /= 3
+        ModifiedSize[i-2] /= 6
     # emplify the latest value to make it pop
     if(len(ModifiedSize) > 0):
-        ModifiedSize[i-1] *= 3
+        ModifiedSize[i-1] *= 6
     # updating the map with latest dots
     myscat.set_offsets(np.c_[x,y])
     myscat.set_sizes(ModifiedSize)
