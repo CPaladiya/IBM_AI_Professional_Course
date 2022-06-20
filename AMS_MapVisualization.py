@@ -1,5 +1,6 @@
 from cProfile import label
 from lib2to3.pytree import Base
+from sqlite3 import TimeFromTicks
 import pandas as pd
 import numpy as np
 import geopy as gp
@@ -78,18 +79,22 @@ BaseData.dropna(subset=['ProcLons', 'ProcLats'])
 lons = list(BaseData['ProcLons'].values)
 lats = list(BaseData['ProcLats'].values)
 victims = list(BaseData['total_victims'].values)
+#categorizing victim rows into bins of 5 and see which bins they fall into
+victimsCategory = [int(x/5) for x in victims]
 FRAMES = len(lons)
 
 # generating sizes of dots based on the fatalities
 stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].max()
-colors = plt.get_cmap('Reds')((stdSizes-stdSizes.min())/(stdSizes.max()-stdSizes.min())) # Creating a color map with standardized data  (stdSizes-stdSizes.mean())/stdSizes.std()
+# coloring with considering outliers and trying to associate colors from range 0 to 1
+colors = plt.get_cmap('Reds')([x*0.062 if x<17 else 1 for x in victimsCategory]) 
 edgecolor = [[0,0,0,1] for x in colors]
 myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
 
-# adding a colorbar in the graph for number of victims
+# adding a color bar based on the number of victims falling into various bins
 cmap = mpl.cm.Reds
-norm = mpl.colors.Normalize(vmin=min(victims), vmax=max(victims))
-mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label='Victims (~59% Injured + ~41% Passed Away)')
+bounds = [0,5,10,15,20,25,30,35,40,45,55,80,100,720]
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label='Victims (~59% Injured + ~41% Passed Away)', ticks=bounds)
 
 # All the fixed text on the map
 HorzOffset = 250000
