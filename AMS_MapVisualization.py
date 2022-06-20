@@ -1,3 +1,4 @@
+from cProfile import label
 from lib2to3.pytree import Base
 import pandas as pd
 import numpy as np
@@ -81,9 +82,14 @@ FRAMES = len(lons)
 
 # generating sizes of dots based on the fatalities
 stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].max()
-colors = plt.get_cmap('Reds')((stdSizes-stdSizes.mean())/stdSizes.std()) # Creating a color map with standardized data
+colors = plt.get_cmap('Reds')((stdSizes-stdSizes.min())/(stdSizes.max()-stdSizes.min())) # Creating a color map with standardized data  (stdSizes-stdSizes.mean())/stdSizes.std()
 edgecolor = [[0,0,0,1] for x in colors]
 myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
+
+# adding a colorbar in the graph for number of victims
+cmap = mpl.cm.Reds
+norm = mpl.colors.Normalize(vmin=min(victims), vmax=max(victims))
+mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label='Victims (~59% Injured + ~41% Passed Away)')
 
 # All the fixed text on the map
 HorzOffset = 250000
@@ -115,12 +121,6 @@ def update(i):
     myscat.set_edgecolor(edgecolor[:i])
     # updating the map with statistics
     return myscat,
-
-# adding a colorbar in the graph for number of victims
-cmap = mpl.cm.Reds
-norm = mpl.colors.Normalize(vmin=min(victims), vmax=max(victims))
-mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap))
-mp.colorbar()
 
 # Running the animation
 anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=500)
