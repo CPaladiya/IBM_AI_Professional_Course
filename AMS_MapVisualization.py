@@ -61,7 +61,7 @@ import matplotlib.animation as animation
 # Setting up USA coordinates
 llon=-130 # lower left hand map corner longitude
 ulon=-65 # Upper right hand map corner longitude
-llat=25
+llat=20
 ulat=60
 
 mapVisualizer, ax = plt.subplots(figsize=(12,8))
@@ -92,7 +92,7 @@ print(colorDict)
 FRAMES = len(lons)
 
 # generating sizes of dots based on the fatalities
-stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].max()
+stdSizes = (np.log(BaseData['total_victims']))*100000/BaseData['total_victims'].max()
 # coloring dots with considering outliers and trying to associate colors from range 0 to 1 with the set(victimsCategory) 
 # 16*0.062 = 0.992 - almost max color, everything else above 16 is 1
 colors = [colorDict[x] for x in victimsCategory]
@@ -121,24 +121,22 @@ totalVictimsGraph = plt.text(3500000 + HorzOffset, VertTextAlign-VertoffsetStat-
 
     # updating the map with statistics
 
-ModifiedSize = []
 AnimationTracker = 0
-zoomingFactor = 1.175
+zoomingFactor = 1.15
 OneDotAnimFrames = 30 
 def update(i):
     realI = int(i/OneDotAnimFrames)
     x = lons[:realI]
     y = lats[:realI]
     # to animate latest plotted size with bigger dia
-    ModifiedSize = stdSizes[:realI]
     # emplify the latest value to make it pop
     global AnimationTracker
-    if(len(ModifiedSize) > 0 and AnimationTracker<OneDotAnimFrames/2):
-        ModifiedSize[realI-1] *= zoomingFactor
+    if(len(stdSizes[:realI]) > 0 and AnimationTracker<OneDotAnimFrames/2):
+        (stdSizes[:realI])[realI-1] *= zoomingFactor
         AnimationTracker += 1
         print(AnimationTracker)
-    if(len(ModifiedSize) > 0 and AnimationTracker >= OneDotAnimFrames/2 and AnimationTracker <OneDotAnimFrames):
-        ModifiedSize[realI-1] /= zoomingFactor
+    if(len(stdSizes[:realI]) > 0 and AnimationTracker >= OneDotAnimFrames/2 and AnimationTracker <OneDotAnimFrames):
+        (stdSizes[:realI])[realI-1] /= zoomingFactor
         AnimationTracker += 1
         print(AnimationTracker)
     if(AnimationTracker >= OneDotAnimFrames):
@@ -146,7 +144,7 @@ def update(i):
         AnimationTracker = 0
     # updating the map with latest dots
     myscat.set_offsets(np.c_[x,y])
-    myscat.set_sizes(ModifiedSize)
+    myscat.set_sizes(stdSizes[:realI])
     myscat.set_color(colors[:realI])
     myscat.set_edgecolor(edgecolor[:realI])
     
