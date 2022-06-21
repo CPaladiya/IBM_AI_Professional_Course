@@ -85,20 +85,23 @@ locations = list(BaseData['location'].values)
 
 #categorizing victim rows into bins of 5 and see which bins they fall into
 victimsCategory = [int(x/5) for x in victims]
-# set(victimsCategory) - {(0-4)0,(5-9) 1,(10-14) 2,(15-19) 3,(20-24) 4,(20-29) 5,(30-34) 6,(35-39) 7,(40-44) 8,(45-49) 9,(50-79) 11,(80-99) 16,(100-599) 20,(600+) 120}
+SetOfCategory = list(set(victimsCategory))
+colorCategory = ['violet', 'orange', 'olive', 'yellow', 'peru', 'cyan', 'steelblue', 'brown', 'teal', 'indigo', 'darkorange', 'red','maroon', 'black']
+colorDict = {SetOfCategory[i]:colorCategory[i] for i in range(len(SetOfCategory))}
+print(colorDict)
 FRAMES = len(lons)
 
 # generating sizes of dots based on the fatalities
 stdSizes = (np.log(BaseData['total_victims']))*50000/BaseData['total_victims'].max()
 # coloring dots with considering outliers and trying to associate colors from range 0 to 1 with the set(victimsCategory) 
 # 16*0.062 = 0.992 - almost max color, everything else above 16 is 1
-colors = plt.get_cmap('Reds')([x*0.062 if x<17 else 1 for x in victimsCategory]) 
+colors = [colorDict[x] for x in victimsCategory]
 edgecolor = [[0,0,0,1] for x in colors]
 myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
 
 # adding a color bar based on the number of victims falling into various bins
-cmap = mpl.cm.Reds
-bounds = [0,5,10,15,20,25,30,35,40,45,55,80,100,720] # colorbar ticks
+cmap = mpl.colors.LinearSegmentedColormap.from_list("", colorCategory)
+bounds = [0,5,10,15,20,25,30,35,40,45,55,80,100,500,1000] # colorbar ticks
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=bounds).set_label(label='Victims (Passed Away + Alive & Injured)',weight='bold', size=15) #(~59% Injured + ~41% Passed Away)
 
