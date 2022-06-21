@@ -1,6 +1,7 @@
 from cProfile import label
 from lib2to3.pytree import Base
 from sqlite3 import TimeFromTicks
+from matplotlib.artist import Artist
 import pandas as pd
 import numpy as np
 import geopy as gp
@@ -79,6 +80,9 @@ BaseData.dropna(subset=['ProcLons', 'ProcLats'])
 lons = list(BaseData['ProcLons'].values)
 lats = list(BaseData['ProcLats'].values)
 victims = list(BaseData['total_victims'].values)
+dates = list((BaseData['month'].map(str) + '/' + BaseData['year'].map(str)).values)
+locations = list(BaseData['location'].values)
+
 #categorizing victim rows into bins of 5 and see which bins they fall into
 victimsCategory = [int(x/5) for x in victims]
 # set(victimsCategory) - {(0-4)0,(5-9) 1,(10-14) 2,(15-19) 3,(20-24) 4,(20-29) 5,(30-34) 6,(35-39) 7,(40-44) 8,(45-49) 9,(50-79) 11,(80-99) 16,(100-599) 20,(600+) 120}
@@ -96,23 +100,33 @@ myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
 cmap = mpl.cm.Reds
 bounds = [0,5,10,15,20,25,30,35,40,45,55,80,100,720] # colorbar ticks
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=bounds).set_label(label='Victims (Passed away + Injured but alive)',weight='bold', size=15) #(~59% Injured + ~41% Passed Away)
+mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=bounds).set_label(label='Victims (Passed Away + Alive & Injured)',weight='bold', size=15) #(~59% Injured + ~41% Passed Away)
 
 # All the fixed text on the map
 HorzOffset = 250000
 VertTextAlign = 4500000
-plt.text(2100000, 5000000, "Mass Shootings in USA", weight='bold', size=20, color='black', rasterized=True, backgroundcolor='red')
-plt.text(1000000 + HorzOffset, VertTextAlign, "Place", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
-plt.text(1800000 + HorzOffset, VertTextAlign, "Date", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
-plt.text(2600000 + HorzOffset, VertTextAlign, "Victims", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
-plt.text(3700000 + HorzOffset, VertTextAlign, "Total Victims Since XYZ", weight='bold', size=12, color='white', rasterized=True, backgroundcolor='black')
+plt.text(2100000, 5000000, "Mass Shootings in USA", weight='bold', size=25, color='black', rasterized=True, backgroundcolor='red')
+plt.text(1000000 + HorzOffset, VertTextAlign - 500000, "Place", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
+plt.text(1000000 + HorzOffset, VertTextAlign, "Date", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
+plt.text(2200000 + HorzOffset, VertTextAlign, "Victims", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
+plt.text(3500000 + HorzOffset, VertTextAlign-50000, "Victims Since Aug'82", weight='bold', size=18, color='white', rasterized=True, backgroundcolor='black')
+VertoffsetStat = 250000
+placeGraph = plt.text(1000000 + HorzOffset, VertTextAlign-VertoffsetStat - 500000, 'place', weight='bold', size=14, color='black', rasterized=True)
+dateGraph = plt.text(1000000 + HorzOffset, VertTextAlign-VertoffsetStat, 'date', weight='bold', size=14, color='black', rasterized=True)
+victimsGraph = plt.text(2200000 + HorzOffset, VertTextAlign-VertoffsetStat, 'victims', weight='bold', size=14, color='black', rasterized=True)
+totalVictimsGraph = plt.text(3500000 + HorzOffset, VertTextAlign-VertoffsetStat-100000, 'total_victims', weight='bold', size=18, color='black', rasterized=True)
+
+    # updating the map with statistics
 
 plottedText = []
 ModifiedSize = []
+StatisticsGraph = []
+
 def update(i):
     
     x = lons[:i]
     y = lats[:i]
+    
     # to animate latest plotted size with bigger dia
     ModifiedSize = stdSizes[:i]
     # reset the previously modified value
@@ -121,16 +135,22 @@ def update(i):
     # emplify the latest value to make it pop
     if(len(ModifiedSize) > 0):
         ModifiedSize[i-1] *= 6
+    
     # updating the map with latest dots
     myscat.set_offsets(np.c_[x,y])
     myscat.set_sizes(ModifiedSize)
     myscat.set_color(colors[:i])
     myscat.set_edgecolor(edgecolor[:i])
-    # updating the map with statistics
+    
+    placeGraph.set_text(locations[i-1])
+    dateGraph.set_text(dates[i-1])
+    victimsGraph.set_text(victims[i-1])
+    totalVictimsGraph.set_text(sum(victims[:i-1]))
+    
     return myscat,
 
 # Running the animation
-anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=500)
+anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=600)
 plt.show()
 
 # Add color bar
