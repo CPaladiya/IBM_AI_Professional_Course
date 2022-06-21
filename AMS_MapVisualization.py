@@ -123,21 +123,26 @@ totalVictimsGraph = plt.text(3500000 + HorzOffset, VertTextAlign-VertoffsetStat-
 
 ModifiedSize = []
 AnimationTracker = 0
+zoomingFactor = 1.175
+OneDotAnimFrames = 30 
 def update(i):
-    realI = int(i/30)
+    realI = int(i/OneDotAnimFrames)
     x = lons[:realI]
     y = lats[:realI]
     # to animate latest plotted size with bigger dia
     ModifiedSize = stdSizes[:realI]
     # emplify the latest value to make it pop
     global AnimationTracker
-    if(len(ModifiedSize) > 0 and AnimationTracker<15):
-        ModifiedSize[realI-1] *= 1.175
+    if(len(ModifiedSize) > 0 and AnimationTracker<OneDotAnimFrames/2):
+        ModifiedSize[realI-1] *= zoomingFactor
         AnimationTracker += 1
-    if(len(ModifiedSize) > 0 and AnimationTracker >= 15 and AnimationTracker <30):
-        ModifiedSize[realI-1] /= 1.175
+        print(AnimationTracker)
+    if(len(ModifiedSize) > 0 and AnimationTracker >= OneDotAnimFrames/2 and AnimationTracker <OneDotAnimFrames):
+        ModifiedSize[realI-1] /= zoomingFactor
         AnimationTracker += 1
-    if(AnimationTracker >= 30):
+        print(AnimationTracker)
+    if(AnimationTracker >= OneDotAnimFrames):
+        print(AnimationTracker)
         AnimationTracker = 0
     # updating the map with latest dots
     myscat.set_offsets(np.c_[x,y])
@@ -153,7 +158,7 @@ def update(i):
     return myscat,
 
 # Running the animation
-anim = animation.FuncAnimation(plt.gcf(), update, frames = 30*FRAMES, interval=1)
+anim = animation.FuncAnimation(plt.gcf(), update, frames = OneDotAnimFrames*FRAMES, interval=1)
 plt.show()
 
 # Add color bar
