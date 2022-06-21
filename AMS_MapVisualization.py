@@ -118,39 +118,39 @@ totalVictimsGraph = plt.text(3500000 + HorzOffset, VertTextAlign-VertoffsetStat-
 
     # updating the map with statistics
 
-plottedText = []
 ModifiedSize = []
-StatisticsGraph = []
-
+AnimationTracker = 0
 def update(i):
-    
-    x = lons[:i]
-    y = lats[:i]
-    
+    realI = int(i/30)
+    x = lons[:realI]
+    y = lats[:realI]
     # to animate latest plotted size with bigger dia
-    ModifiedSize = stdSizes[:i]
-    # reset the previously modified value
-    if(len(ModifiedSize) > 1):
-        ModifiedSize[i-2] /= 6
+    ModifiedSize = stdSizes[:realI]
     # emplify the latest value to make it pop
-    if(len(ModifiedSize) > 0):
-        ModifiedSize[i-1] *= 6
-    
+    global AnimationTracker
+    if(len(ModifiedSize) > 0 and AnimationTracker<15):
+        ModifiedSize[realI-1] *= 1.175
+        AnimationTracker += 1
+    if(len(ModifiedSize) > 0 and AnimationTracker >= 15 and AnimationTracker <30):
+        ModifiedSize[realI-1] /= 1.175
+        AnimationTracker += 1
+    if(AnimationTracker >= 30):
+        AnimationTracker = 0
     # updating the map with latest dots
     myscat.set_offsets(np.c_[x,y])
     myscat.set_sizes(ModifiedSize)
-    myscat.set_color(colors[:i])
-    myscat.set_edgecolor(edgecolor[:i])
+    myscat.set_color(colors[:realI])
+    myscat.set_edgecolor(edgecolor[:realI])
     
-    placeGraph.set_text(locations[i-1])
-    dateGraph.set_text(dates[i-1])
-    victimsGraph.set_text(victims[i-1])
-    totalVictimsGraph.set_text(sum(victims[:i-1]))
+    placeGraph.set_text(locations[realI-1])
+    dateGraph.set_text(dates[realI-1])
+    victimsGraph.set_text(victims[realI-1])
+    totalVictimsGraph.set_text(sum(victims[:realI-1]))
     
     return myscat,
 
 # Running the animation
-anim = animation.FuncAnimation(plt.gcf(), update, frames = FRAMES, interval=600)
+anim = animation.FuncAnimation(plt.gcf(), update, frames = 30*FRAMES, interval=1)
 plt.show()
 
 # Add color bar
