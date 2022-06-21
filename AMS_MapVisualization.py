@@ -61,7 +61,7 @@ import matplotlib.animation as animation
 # Setting up USA coordinates
 llon=-130 # lower left hand map corner longitude
 ulon=-65 # Upper right hand map corner longitude
-llat=20
+llat=23
 ulat=60
 
 mapVisualizer, ax = plt.subplots(figsize=(12,8))
@@ -86,7 +86,7 @@ locations = list(BaseData['location'].values)
 #categorizing victim rows into bins of 5 and see which bins they fall into
 victimsCategory = [int(x/5) for x in victims]
 SetOfCategory = list(set(victimsCategory))
-colorCategory = ['violet', 'orange', 'olive', 'yellow', 'peru', 'cyan', 'steelblue', 'brown', 'teal', 'indigo', 'darkorange', 'red','maroon', 'black']
+colorCategory = ['blueviolet', 'skyblue', 'olive', 'yellow', 'peru', 'limegreen', 'steelblue', 'brown', 'teal', 'indigo', 'darkorange', 'red','maroon', 'black']
 colorDict = {SetOfCategory[i]:colorCategory[i] for i in range(len(SetOfCategory))}
 print(colorDict)
 FRAMES = len(lons)
@@ -132,11 +132,11 @@ def update(i):
     # emplify the latest value to make it pop
     global AnimationTracker
     if(len(stdSizes[:realI]) > 0 and AnimationTracker<OneDotAnimFrames/2):
-        (stdSizes[:realI])[realI-1] *= zoomingFactor
+        stdSizes[realI-1] *= zoomingFactor
         AnimationTracker += 1
         print(AnimationTracker)
     if(len(stdSizes[:realI]) > 0 and AnimationTracker >= OneDotAnimFrames/2 and AnimationTracker <OneDotAnimFrames):
-        (stdSizes[:realI])[realI-1] /= zoomingFactor
+        stdSizes[realI-1] /= zoomingFactor
         AnimationTracker += 1
         print(AnimationTracker)
     if(AnimationTracker >= OneDotAnimFrames):
@@ -151,16 +151,10 @@ def update(i):
     placeGraph.set_text(locations[realI-1])
     dateGraph.set_text(dates[realI-1])
     victimsGraph.set_text(victims[realI-1])
-    totalVictimsGraph.set_text(sum(victims[:realI-1]))
+    totalVictimsGraph.set_text(sum(victims[:realI]))
     
     return myscat,
 
 # Running the animation
 anim = animation.FuncAnimation(plt.gcf(), update, frames = OneDotAnimFrames*FRAMES, interval=1)
 plt.show()
-
-# Add color bar
-# Add month and date
-# Add location
-# Add number of victims at location
-# Add total number of victims
