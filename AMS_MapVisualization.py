@@ -11,7 +11,7 @@ import matplotlib as mpl
 from pylab import rcParams
 import math
 
-# if the preprocessed data is already available or not
+# If I need to preprocess data?
 PreProcessData = False
 
 #if data is not preprocessed, we need to make sure it is already processed
@@ -80,7 +80,7 @@ BaseData.dropna(subset=['ProcLons', 'ProcLats'])
 lons = list(BaseData['ProcLons'].values)
 lats = list(BaseData['ProcLats'].values)
 victims = list(BaseData['total_victims'].values)
-dates = list((BaseData['month'].map(str) + '/' + BaseData['year'].map(str)).values)
+dates = list(((BaseData['month'].dt.month_name()).map(str) + '/' + BaseData['year'].map(str)).values)
 locations = list(BaseData['location'].values)
 
 #categorizing victim rows into bins of 5 and see which bins they fall into
@@ -111,7 +111,7 @@ plt.text(2100000, 5000000, "Mass Shootings in USA", weight='bold', size=25, colo
 plt.text(1000000 + HorzOffset, VertTextAlign - 500000, "Place", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
 plt.text(1000000 + HorzOffset, VertTextAlign, "Date", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
 plt.text(2200000 + HorzOffset, VertTextAlign, "Victims", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
-plt.text(3500000 + HorzOffset, VertTextAlign-50000, "Victims Since Aug'82", weight='bold', size=18, color='white', rasterized=True, backgroundcolor='black')
+plt.text(3500000 + HorzOffset, VertTextAlign-50000, "Victims Since '82", weight='bold', size=18, color='white', rasterized=True, backgroundcolor='black')
 plt.text(1000000, 100000, "Source: https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/", size=10, color='black', rasterized=True, backgroundcolor='gray')
 VertoffsetStat = 250000
 placeGraph = plt.text(1000000 + HorzOffset, VertTextAlign-VertoffsetStat - 500000, 'place', weight='bold', size=14, color='black', rasterized=True)
