@@ -102,7 +102,7 @@ myscat = mp.scatter([], [], marker='o',zorder = 5, linewidths = 2)
 cmap = mpl.colors.LinearSegmentedColormap.from_list("", colorCategory)
 bounds = [0,5,10,15,20,25,30,35,40,45,55,80,100,500,1000] # colorbar ticks
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=bounds).set_label(label='Victims (Died/Injured)',weight='bold',backgroundcolor='red', size=15) #(~59% Injured + ~41% Passed Away)
+mp.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), ticks=bounds).set_label(label='Victims (Died/Injured)',color='white',weight='bold',backgroundcolor='black', size=15)
 
 # All the fixed text on the map
 HorzOffset = 250000
@@ -112,6 +112,7 @@ plt.text(1000000 + HorzOffset, VertTextAlign - 500000, "Place", weight='bold', s
 plt.text(1000000 + HorzOffset, VertTextAlign, "Date", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
 plt.text(2200000 + HorzOffset, VertTextAlign, "Victims", weight='bold', size=14, color='white', rasterized=True, backgroundcolor='black')
 plt.text(3500000 + HorzOffset, VertTextAlign-50000, "Victims Since Aug'82", weight='bold', size=18, color='white', rasterized=True, backgroundcolor='black')
+plt.text(1000000, 100000, "Source: https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/", size=10, color='black', rasterized=True, backgroundcolor='gray')
 VertoffsetStat = 250000
 placeGraph = plt.text(1000000 + HorzOffset, VertTextAlign-VertoffsetStat - 500000, 'place', weight='bold', size=14, color='black', rasterized=True)
 dateGraph = plt.text(1000000 + HorzOffset, VertTextAlign-VertoffsetStat, 'date', weight='bold', size=14, color='black', rasterized=True)
